@@ -195,6 +195,20 @@
     align-items: center;
     gap: 7px;
   }
+  .cta-consent {
+    flex-basis: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--ink-light);
+    max-width: 480px;
+  }
+  .cta-consent input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--green); }
+  .final .cta-consent { color: rgba(255,255,255,0.75); margin-left: auto; margin-right: auto; }
+  .final .cta-consent a { color: #fff; }
   .cta-success {
     display: none;
     background: var(--green-light);
@@ -581,9 +595,16 @@
       <h1>Die moderne Software, die deine <span class="hl">Therapie-Praxis</span> von selbst organisiert.</h1>
       <p class="lead">Online-Terminbuchung, Kalender, automatische Erinnerungen, digitale Anamnese und Honorarnoten – in einer aufgeräumten Cloud-Software, die zusammenspielt. Schluss mit Zettelwirtschaft, Telefonchaos und veralteten Desktop-Programmen.</p>
 
-      <form class="cta-form" id="heroForm" action="#" novalidate>
+      <form class="cta-form" id="heroForm" action="https://formsubmit.co/sannalena.slg@gmail.com" method="POST" novalidate>
         <input type="email" name="email" placeholder="Deine E-Mail-Adresse" aria-label="E-Mail-Adresse" required>
         <button type="submit" class="btn btn-primary">Praxly kennenlernen</button>
+        <input type="hidden" name="_subject" value="Neue Anmeldung über praxly.at (Hero)">
+        <input type="hidden" name="_template" value="box">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="quelle" value="Startseite oben">
+        <input type="hidden" name="_autoresponse" value="Danke für dein Interesse an Praxly! Schön, dass du dabei sein möchtest. In Kürze folgt eine persönliche Nachricht mit einem kurzen Video-Einblick in Praxly und den nächsten Schritten. Bis dahin alles Gute – Praxly, die moderne Software für deine Therapie-Praxis. praxly.at">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+        <label class="cta-consent"><input type="checkbox" name="einwilligung" value="ja" required> Ich bin einverstanden, zu Praxly per E-Mail kontaktiert zu werden. <a href="datenschutz.html">Datenschutz</a></label>
       </form>
       <div class="cta-success" id="heroSuccess">
         <strong>Danke!</strong> Du bekommst in Kürze eine Nachricht und einen ersten Einblick in Praxly – in Ruhe und ohne Verkaufsdruck.
@@ -807,9 +828,16 @@
   <h2>Lern Praxly kennen und sichere dir früh deinen Platz.</h2>
   <p>Praxly ist neu und startet mit wenigen ausgewählten Praxen. Trag dich ein – du bekommst eine Nachricht und einen Einblick, wie Praxly deinen Praxis-Alltag spürbar einfacher macht.</p>
 
-  <form class="cta-form" id="finalForm" action="#" novalidate>
+  <form class="cta-form" id="finalForm" action="https://formsubmit.co/sannalena.slg@gmail.com" method="POST" novalidate>
     <input type="email" name="email" placeholder="Deine E-Mail-Adresse" aria-label="E-Mail-Adresse" required>
     <button type="submit" class="btn btn-primary">Platz sichern</button>
+    <input type="hidden" name="_subject" value="Neue Anmeldung über praxly.at (Platz sichern)">
+    <input type="hidden" name="_template" value="box">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="quelle" value="Startseite unten">
+    <input type="hidden" name="_autoresponse" value="Danke für dein Interesse an Praxly! Schön, dass du dabei sein möchtest. In Kürze folgt eine persönliche Nachricht mit einem kurzen Video-Einblick in Praxly und den nächsten Schritten. Bis dahin alles Gute – Praxly, die moderne Software für deine Therapie-Praxis. praxly.at">
+    <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+    <label class="cta-consent"><input type="checkbox" name="einwilligung" value="ja" required> Ich bin einverstanden, zu Praxly per E-Mail kontaktiert zu werden. <a href="datenschutz.html">Datenschutz</a></label>
   </form>
   <div class="cta-success" id="finalSuccess">
     <strong>Danke!</strong> Du bekommst in Kürze eine Nachricht und einen ersten Einblick in Praxly.
@@ -838,13 +866,20 @@
       if (!form || !success) return;
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var input = form.querySelector('input[type="email"]');
-        if (!input.value.trim() || !input.checkValidity()) {
-          input.reportValidity();
+        if (!form.checkValidity()) {
+          form.reportValidity();
           return;
         }
-        form.style.display = 'none';
-        success.classList.add('show');
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; }
+        var data = {};
+        new FormData(form).forEach(function (v, k) { data[k] = v; });
+        function done() { form.style.display = 'none'; success.classList.add('show'); }
+        fetch('https://formsubmit.co/ajax/sannalena.slg@gmail.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(data)
+        }).then(done).catch(done);
       });
     }
     wire('heroForm', 'heroSuccess');
